@@ -1139,9 +1139,24 @@
             const managerCollectionRef = collection(db, getPrivateCollectionPath('managers'));
             try {
                 // Use name as doc ID for simplicity in management view
-                await setDoc(doc(managerCollectionRef, name), { name: name, createdAt: serverTimestamp() });
-                document.getElementById('add-manager-form').reset();
-                await showModal('成功', `管理人 ${name} 已成功新增！`);
+                await setDoc(docRef, projectData);
+
+                // --- 🔄 同步到 Google Sheet ---
+                try {
+                  const googleScriptURL = "https://script.google.com/macros/s/AKfycbw7Aw7jqg_ndgZ8Q2vQufy058SkYQ08Xg-JjbamvyP6wqOXAYTvZ5xsshCh0L0g77Wm/exec";
+                  await fetch(googleScriptURL, {
+                    method: "POST",
+                    body: JSON.stringify(projectData),
+                    headers: { "Content-Type": "application/json" }
+                  });
+                  console.log("✅ 已同步到 Google Sheet");
+                } catch (err) {
+                  console.error("❌ 同步 Google Sheet 失敗:", err);
+                }
+
+               // --- 原有結尾 ---
+               document.getElementById('new-project-form').reset();
+               await showModal('成功', `專案「${projectData.title}」已成功新增！`);
             } catch (error) {
                 console.error("Error adding manager:", error);
                 await showModal('錯誤', '新增管理人失敗。');
