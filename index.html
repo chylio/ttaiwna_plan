@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專業專案管理儀表板</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+        }
+        /* Custom scrollbar for main content */
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .main-content::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+        .main-content::-webkit-scrollbar-track {
+            background-color: #f1f5f9;
+        }
+        /* Style for completed project label */
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="w-64 bg-gray-800 text-white flex flex-col shadow-xl">
+        <div class="p-6 text-xl font-bold border-b border-gray-700 bg-gray-900">
+            專案總覽系統
+        </div>
+        <ul class="flex flex-col p-4 space-y-2">
+            <li class="nav-item cursor-pointer p-3 rounded-lg transition-colors hover:bg-gray-700" data-view="dashboard">
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7-8h14"></path></svg>
+                    <span>儀表板 (Dashboard)</span>
+                </span>
+            </li>
+            <li class="nav-item cursor-pointer p-3 rounded-lg transition-colors hover:bg-gray-700" data-view="projects">
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    <span>專案管理 (Projects)</span>
+                </span>
+            </li>
+            <li class="nav-item cursor-pointer p-3 rounded-lg transition-colors hover:bg-gray-700" data-view="calendar">
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>行事曆 (Calendar)</span>
+                </span>
+            </li>
+            <li class="nav-item cursor-pointer p-3 rounded-lg transition-colors hover:bg-gray-700" data-view="managers">
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20v-2c0-.656-.126-1.283-.356-1.857M9 20h2v-2a3 3 0 00-5.356-1.857M9 20v-2c0-.656-.126-1.283-.356-1.857M9 14V5a2 2 0 012-2h2a2 2 0 012 2v9m-7 0h14"></path></svg>
+                    <span>人員管理 (Managers)</span>
+                </span>
+            </li>
+            <li class="nav-item cursor-pointer p-3 rounded-lg transition-colors hover:bg-gray-700" data-view="ai-analysis">
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span>AI 分析報告 (AI Report)</span>
+                </span>
+            </li>
+            <li class="nav-item cursor-pointer p-3 rounded-lg transition-colors hover:bg-gray-700" data-view="exchange">
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                    <span>資訊交流 (Exchange)</span>
+                </span>
+            </li>
+        </ul>
+        <div class="mt-auto p-4 text-sm text-gray-400">
+            <p>用戶 ID: <span id="user-id">讀取中...</span></p>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto main-content p-8">
+        <header class="mb-8 border-b pb-4">
+            <h1 id="page-title" class="text-3xl font-semibold text-gray-800">儀表板</h1>
+        </header>
+
+        <!-- View Containers -->
+        <div id="dashboard-view" class="view-content" style="display: none;"></div>
+        <div id="projects-view" class="view-content" style="display: none;"></div>
+        <div id="project-detail-view" class="view-content" style="display: none;"></div>
+        <div id="calendar-view" class="view-content" style="display: none;"></div>
+        <div id="managers-view" class="view-content" style="display: none;"></div>
+        <div id="ai-analysis-view" class="view-content" style="display: none;"></div>
+        <div id="exchange-view" class="view-content" style="display: none;"></div>
+
+        <!-- Modal for Confirmation/Message -->
+        <div id="app-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+            <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full">
+                <h3 class="text-lg font-semibold mb-3" id="modal-title">訊息</h3>
+                <p id="modal-message" class="text-gray-700 mb-4">操作成功！</p>
+                <div class="flex justify-end space-x-3">
+                    <button id="modal-cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors hidden">取消</button>
+                    <button id="modal-confirm-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">確定</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, runTransaction, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Set Firebase log level to Debug for visibility
+        setLogLevel('Debug');
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- Firebase Initialization ---
+        let app, db, auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } else {
+            console.error("Firebase configuration is missing.");
+        }
+
+        // --- Data State ---
+        let allProjects = [];
+        let availableManagers = []; // 新增: 管理人列表狀態
+        let totalMetrics = {
+            totalProjects: 0,
+            totalBudget: 0,
+            personnel: { budget: 0, spent: 0, balance: 0 },
+            operating: { budget: 0, spent: 0, balance: 0 },
+            equipment: { budget: 0, spent: 0, balance: 0 },
+        };
+        let currentView = 'dashboard';
+        let selectedProjectId = null;
+        let calendarEvents = [];
+        let exchangeMessages = [];
+
+        // --- Utility Functions ---
+
+        /**
+         * Formats a number as a currency string (Taiwan locale for clarity).
+         * @param {number} amount
+         * @returns {string}
+         */
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 }).format(amount);
+        };
+
+        /**
+         * Shows a custom modal instead of alert/confirm.
+         * @param {string} title
+         * @param {string} message
+         * @param {boolean} showCancel
+         * @returns {Promise<boolean>}
+         */
+        const showModal = (title, message, showCancel = false) => {
+            return new Promise(resolve => {
+                const modal = document.getElementById('app-modal');
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-message').textContent = message;
+
+                const confirmBtn = document.getElementById('modal-confirm-btn');
+                const cancelBtn = document.getElementById('modal-cancel-btn');
+
+                confirmBtn.onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(true);
+                };
+
+                if (showCancel) {
+                    cancelBtn.classList.remove('hidden');
+                    cancelBtn.onclick = () => {
+                        modal.classList.add('hidden');
+                        resolve(false);
+                    };
+                } else {
+                    cancelBtn.classList.add('hidden');
+                }
+
+                modal.classList.remove('hidden');
+            });
+        };
+
+        /**
+         * Switches the main view and updates the navigation and title.
+         * @param {string} view
+         */
+        const switchView = (view, projectId = null) => {
+            currentView = view;
+            selectedProjectId = projectId;
+
+            document.querySelectorAll('.view-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-gray-700'));
+
+            document.getElementById('page-title').textContent = getPageTitle(view);
+
+            if (view === 'project-detail') {
+                 document.getElementById('project-detail-view').style.display = 'block';
+                 renderProjectDetail(projectId);
+                 document.querySelector(`.nav-item[data-view="projects"]`).classList.add('bg-gray-700');
+            } else {
+                document.getElementById(`${view}-view`).style.display = 'block';
+                document.querySelector(`.nav-item[data-view="${view}"]`).classList.add('bg-gray-700');
+
+                if (view === 'dashboard') renderDashboard();
+                if (view === 'projects') renderProjectsList();
+                if (view === 'calendar') renderCalendar();
+                if (view === 'exchange') renderExchange();
+                if (view === 'ai-analysis') renderAIAnalysis();
+                if (view === 'managers') renderManagersView(); // 渲染管理人管理頁面
+            }
+        };
+
+        const getPageTitle = (view) => {
+            switch (view) {
+                case 'dashboard': return '專案管理儀表板';
+                case 'projects': return '專案列表與新增';
+                case 'project-detail':
+                    const project = allProjects.find(p => p.id === selectedProjectId);
+                    return `專案詳情: ${project ? project.title : 'N/A'}`;
+                case 'calendar': return '專案行事曆與指派';
+                case 'managers': return '專案人員管理';
+                case 'ai-analysis': return 'AI 專案活動分析報告';
+                case 'exchange': return '資訊交流區 (留言板)';
+                default: return '儀表板';
+            }
+        };
+
+        // --- Firebase/Auth Setup ---
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                document.getElementById('user-id').textContent = userId.substring(0, 8) + '...';
+                isAuthReady = true;
+                console.log("Auth State Changed: User signed in with UID:", userId);
+                
+                // Start listening to data
+                listenToPrivateData();
+                listenToManagers(); // NEW: 監聽管理人名單
+                listenToPublicMessages();
+                
+                // Render initial view
+                switchView(currentView);
+
+                // NEW: 首次運行時，匯入初始管理人名單
+                await seedInitialManagers();
+            } else {
+                // 登出狀態，由下方邏輯處理登入
+            }
+        });
+
+        if (initialAuthToken) {
+            signInWithCustomToken(auth, initialAuthToken).catch(error => {
+                console.error("Custom token sign-in failed:", error);
+                signInAnonymously(auth); // Fallback
+            });
+        } else if (auth) {
+             signInAnonymously(auth); // Sign in anonymously if no token is available
+        }
+
+
+        // --- New: Managers Seeding Function ---
+        const seedInitialManagers = async () => {
+            if (!db || !userId) return;
+
+            const managerCollectionRef = collection(db, getPrivateCollectionPath('managers'));
+            try {
+                // 檢查是否已存在任何管理人
+                const snapshot = await getDocs(managerCollectionRef);
+                if (snapshot.empty) {
+                    const initialList = ["蔡雅雯", "陳乃菁", "吳曉琪", "蘇琬淳", "楊穎潔"];
+                    for (const name of initialList) {
+                        // 使用 name 作為 Document ID，方便管理和刪除
+                        await setDoc(doc(managerCollectionRef, name), { name: name, createdAt: serverTimestamp() });
+                    }
+                    console.log("Seeded initial managers.");
+                }
+            } catch (error) {
+                console.error("Error seeding initial managers:", error);
+            }
+        };
+
+
+        // --- Firestore Data Listeners (Real-time) ---
+
+        const getPrivateCollectionPath = (collectionName) => `/artifacts/${appId}/users/${userId}/${collectionName}`;
+        const getPublicCollectionPath = (collectionName) => `/artifacts/${appId}/public/data/${collectionName}`;
+
+        const listenToPrivateData = () => {
+            if (!db || !userId) return;
+
+            const q = collection(db, getPrivateCollectionPath('projects'));
+            onSnapshot(q, (snapshot) => {
+                const projects = [];
+                snapshot.forEach(doc => {
+                    projects.push({ id: doc.id, ...doc.data() });
+                });
+                allProjects = projects;
+                calculateTotalMetrics(projects);
+                
+                // Re-render the current view to reflect data changes
+                if (currentView === 'dashboard') renderDashboard();
+                if (currentView === 'projects') renderProjectsList();
+                if (currentView === 'project-detail' && selectedProjectId) renderProjectDetail(selectedProjectId);
+                if (currentView === 'calendar') renderCalendar(); // Re-render calendar on data change
+            }, (error) => {
+                console.error("Error listening to projects:", error);
+            });
+        };
+
+        // NEW: Listener for Managers
+        const listenToManagers = () => {
+            if (!db || !userId) return;
+
+            const q = query(collection(db, getPrivateCollectionPath('managers')), orderBy('createdAt', 'asc'));
+            onSnapshot(q, (snapshot) => {
+                availableManagers = [];
+                snapshot.forEach(doc => {
+                    availableManagers.push({ id: doc.id, name: doc.data().name });
+                });
+                
+                // Re-render views that depend on manager list
+                if (currentView === 'projects') renderProjectsList();
+                if (currentView === 'calendar') renderCalendar();
+                if (currentView === 'managers') renderManagersView();
+                
+            }, (error) => {
+                console.error("Error listening to managers:", error);
+            });
+        };
+
+        const listenToPublicMessages = () => {
+            if (!db) return;
+
+            const q = query(collection(db, getPublicCollectionPath('messages')), orderBy('timestamp', 'desc'), limit(50));
+            onSnapshot(q, (snapshot) => {
+                exchangeMessages = [];
+                snapshot.forEach(doc => {
+                    exchangeMessages.push({ id: doc.id, ...doc.data() });
+                });
+                if (currentView === 'exchange') renderExchange();
+            }, (error) => {
+                console.error("Error listening to messages:", error);
+            });
+        };
+
+
+        // --- Core Metric Calculation ---
+
+        const calculateTotalMetrics = (projects) => {
+            let totalProjects = projects.length;
+            let totalBudget = 0;
+            let p_budget = 0, p_spent = 0;
+            let o_budget = 0, o_spent = 0;
+            let e_budget = 0, e_spent = 0;
+
+            projects.forEach(p => {
+                const bp = p.budget_personnel || 0;
+                const bo = p.budget_operating || 0;
+                const be = p.budget_equipment || 0;
+
+                // NEW: Recalculate spent based on the detailed expenses array for accuracy
+                let projectSpent = { personnel: 0, operating: 0, equipment: 0 };
+                (p.expenses || []).forEach(exp => {
+                    projectSpent[exp.type] += exp.amount;
+                });
+                
+                p_spent += projectSpent.personnel;
+                o_spent += projectSpent.operating;
+                e_spent += projectSpent.equipment;
+
+                totalBudget += bp + bo + be;
+            });
+
+            totalMetrics = {
+                totalProjects,
+                totalBudget,
+                personnel: { budget: p_budget, spent: p_spent, balance: p_budget - p_spent },
+                operating: { budget: o_budget, spent: o_spent, balance: o_budget - o_spent },
+                equipment: { budget: e_budget, spent: e_spent, balance: e_budget - e_spent },
+            };
+        };
+
+
+        // --- View Rendering Functions ---
+
+        // 1. Dashboard View
+        const renderDashboard = () => {
+            const m = totalMetrics;
+
+            const metricCard = (title, value, unit) => `
+                <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-indigo-500 transition-shadow duration-300 hover:shadow-xl">
+                    <p class="text-sm font-medium text-gray-500">${title}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">${value}</p>
+                    ${unit ? `<p class="text-xs text-gray-400 mt-1">${unit}</p>` : ''}
+                </div>
+            `;
+
+            const expenseCard = (title, data) => {
+                const percentage = data.budget > 0 ? ((data.spent / data.budget) * 100).toFixed(1) : 0;
+                const balanceClass = data.balance >= 0 ? 'text-green-600' : 'text-red-600';
+                return `
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-indigo-400">
+                        <h4 class="text-xl font-semibold mb-4 text-gray-800">${title}</h4>
+                        <div class="space-y-3">
+                            <p class="text-md flex justify-between">
+                                <span class="font-medium text-gray-600">總預算:</span> 
+                                <span class="font-bold">${formatCurrency(data.budget)}</span>
+                            </p>
+                            <p class="text-md flex justify-between">
+                                <span class="font-medium text-gray-600">已填報金額:</span> 
+                                <span class="font-bold text-yellow-600">${formatCurrency(data.spent)}</span>
+                            </p>
+                            <p class="text-lg flex justify-between border-t pt-3 mt-3">
+                                <span class="font-bold text-gray-700">餘額:</span> 
+                                <span class="font-extrabold ${balanceClass}">${formatCurrency(data.balance)}</span>
+                            </p>
+                        </div>
+                        <div class="mt-4">
+                            <div class="h-2 bg-gray-200 rounded-full">
+                                <div class="h-2 bg-indigo-500 rounded-full" style="width: ${Math.min(percentage, 100)}%;"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">支出比例: ${percentage}%</p>
+                        </div>
+                    </div>
+                `;
+            };
+
+            const html = `
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    ${metricCard('專案總數', m.totalProjects, '個')}
+                    ${metricCard('所有專案預算總計', formatCurrency(m.totalBudget), 'TWD')}
+                    ${metricCard('人事費總餘額', formatCurrency(m.personnel.balance), m.personnel.balance >= 0 ? '狀況良好' : '已超支')}
+                    ${metricCard('業務費總餘額', formatCurrency(m.operating.balance), m.operating.balance >= 0 ? '狀況良好' : '已超支')}
+                </section>
+
+                <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    ${expenseCard('人事費 (Personnel)', m.personnel)}
+                    ${expenseCard('業務費 (Operating)', m.operating)}
+                    ${expenseCard('設備費 (Equipment)', m.equipment)}
+                </section>
+                
+                <section class="mt-8">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">專案概況</h2>
+                    <div id="dashboard-project-list" class="bg-white p-4 rounded-xl shadow-lg overflow-x-auto">
+                        ${renderProjectSummaryTable()}
+                    </div>
+                </section>
+            `;
+
+            document.getElementById('dashboard-view').innerHTML = html;
+        };
+
+        const renderProjectSummaryTable = () => {
+            // UPDATED: Create a dropdown structure for project list if there are many projects (mock limit: 10)
+            if (allProjects.length === 0) {
+                return '<p class="text-gray-500 text-center py-4">目前沒有專案。請到專案管理頁面新增。</p>';
+            }
+
+            const projectsToDisplay = allProjects.filter(p => p.status !== 'completed');
+            const completedProjects = allProjects.filter(p => p.status === 'completed');
+
+            const headerClass = "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
+            const cellClass = "px-4 py-2 whitespace-nowrap text-sm text-gray-800";
+
+            const createTableBody = (projects) => projects.map(p => {
+                const totalBudget = (p.budget_personnel || 0) + (p.budget_operating || 0) + (p.budget_equipment || 0);
+                // NEW: Use aggregate spent from metrics calculation
+                const totalSpent = (p.expenses || []).reduce((sum, exp) => sum + exp.amount, 0);
+                const balance = totalBudget - totalSpent;
+                const balanceClass = balance >= 0 ? 'text-green-600' : 'text-red-600';
+                
+                const managersDisplay = (p.managers && Array.isArray(p.managers)) ? p.managers.join(', ') : (p.manager || 'N/A');
+                
+                return `
+                    <tr class="hover:bg-indigo-50 cursor-pointer ${p.status === 'completed' ? 'opacity-70' : ''}" onclick="window.switchView('project-detail', '${p.id}')">
+                        <td class="${cellClass} font-medium">${p.title || 'N/A'} 
+                            ${p.status === 'completed' ? '<span class="status-completed text-xs font-bold px-2 py-0.5 rounded-full ml-2">已結案</span>' : ''}
+                        </td>
+                        <td class="${cellClass}">${p.host || 'N/A'}</td>
+                        <td class="${cellClass}">${managersDisplay}</td>
+                        <td class="${cellClass}">${formatCurrency(totalBudget)}</td>
+                        <td class="${cellClass} text-yellow-600">${formatCurrency(totalSpent)}</td>
+                        <td class="${cellClass} ${balanceClass} font-semibold">${formatCurrency(balance)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+
+            let html = `
+                <table class="min-w-full divide-y divide-gray-200 mb-6">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="${headerClass}">計畫題目</th>
+                            <th class="${headerClass}">計畫主持人</th>
+                            <th class="${headerClass}">專案管理人</th>
+                            <th class="${headerClass}">總預算</th>
+                            <th class="${headerClass}">總花費</th>
+                            <th class="${headerClass}">餘額</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${createTableBody(projectsToDisplay)}
+                    </tbody>
+                </table>
+            `;
+
+            if (completedProjects.length > 0) {
+                 html += `
+                    <details class="mt-4 border rounded-lg">
+                        <summary class="p-3 cursor-pointer bg-gray-100 font-semibold text-gray-700 hover:bg-gray-200">
+                            已結案專案 (${completedProjects.length} 個) - 點擊展開/收合
+                        </summary>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="${headerClass}">計畫題目</th>
+                                        <th class="${headerClass}">計畫主持人</th>
+                                        <th class="${headerClass}">專案管理人</th>
+                                        <th class="${headerClass}">總預算</th>
+                                        <th class="${headerClass}">總花費</th>
+                                        <th class="${headerClass}">餘額</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    ${createTableBody(completedProjects)}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                 `;
+            }
+
+            return html;
+        };
+        
+
+        // 2. Projects List View and New Project Form
+        const renderProjectsList = () => {
+            const html = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- New Project Form -->
+                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg h-fit">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2 text-indigo-600">新增專案計畫</h2>
+                        <form id="new-project-form" class="space-y-4">
+                            <input type="text" id="project_id" placeholder="計畫編號 (Project ID)" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="text" id="project_title" placeholder="計畫題目 (Title)" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="text" id="project_host" placeholder="計畫主持人 (Host)" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            
+                            <!-- NEW: Multi-select dropdown for Project Managers -->
+                            <h3 class="font-semibold pt-2 text-gray-700">專案管理人</h3>
+                            <select id="project_managers" multiple required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 h-32 text-sm">
+                                ${availableManagers.map(m => `<option value="${m.name}">${m.name}</option>`).join('')}
+                            </select>
+                            <p class="text-xs text-gray-500 -mt-3">按住 Ctrl/Cmd (或在行動裝置上長按) 可多選專案管理人 (至少選一位)。</p>
+
+                            <h3 class="font-semibold pt-2 text-gray-700">預算金額 (Budget)</h3>
+                            <!-- UPDATED: Added clear text labels (Point 1) -->
+                            <label for="budget_personnel" class="block text-sm font-medium text-gray-700">人事費補助金額</label>
+                            <input type="number" id="budget_personnel" placeholder="請輸入人事費總預算" required min="0" value="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            
+                            <label for="budget_operating" class="block text-sm font-medium text-gray-700">業務費補助金額</label>
+                            <input type="number" id="budget_operating" placeholder="請輸入業務費總預算" required min="0" value="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            
+                            <label for="budget_equipment" class="block text-sm font-medium text-gray-700">設備費補助金額</label>
+                            <input type="number" id="budget_equipment" placeholder="請輸入設備費總預算" required min="0" value="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            
+                            <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-md">
+                                <span id="project-submit-text">新增計畫</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Project List Table -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2 text-gray-800">現有專案列表</h2>
+                        <div id="project-list-table-container" class="overflow-x-auto">
+                            ${renderProjectListTable()}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('projects-view').innerHTML = html;
+
+            document.getElementById('new-project-form').onsubmit = handleNewProject;
+        };
+        
+        const renderProjectListTable = () => {
+            if (allProjects.length === 0) {
+                return '<p class="text-gray-500 text-center py-12">請在左側表單新增第一個專案。</p>';
+            }
+
+            const headerClass = "px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
+            const cellClass = "px-4 py-2 whitespace-nowrap text-sm";
+
+            return `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="${headerClass}">計畫編號</th>
+                            <th class="${headerClass}">計畫題目</th>
+                            <th class="${headerClass}">主持人 / 管理人</th>
+                            <th class="${headerClass}">總預算</th>
+                            <th class="${headerClass}">狀態</th>
+                            <th class="${headerClass}">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${allProjects.map(p => {
+                            const totalBudget = (p.budget_personnel || 0) + (p.budget_operating || 0) + (p.budget_equipment || 0);
+                            
+                            // 顯示多個管理人
+                            const managersDisplay = (p.managers && Array.isArray(p.managers)) ? p.managers.join(', ') : (p.manager || 'N/A');
+                            const statusLabel = p.status === 'completed' ? '已結案' : '執行中';
+                            const statusClass = p.status === 'completed' ? 'status-completed' : 'bg-blue-100 text-blue-800';
+
+                            return `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="${cellClass} font-medium">${p.id || 'N/A'}</td>
+                                    <td class="${cellClass} text-indigo-600 hover:underline cursor-pointer" onclick="window.switchView('project-detail', '${p.id}')">${p.title || 'N/A'}</td>
+                                    <td class="${cellClass}">${p.host} / ${managersDisplay}</td>
+                                    <td class="${cellClass} text-right">${formatCurrency(totalBudget)}</td>
+                                    <td class="${cellClass}">
+                                        <span class="text-xs font-bold px-2 py-0.5 rounded-full ${statusClass}">${statusLabel}</span>
+                                    </td>
+                                    <td class="${cellClass}">
+                                        <button onclick="window.switchView('project-detail', '${p.id}')" class="text-indigo-600 hover:text-indigo-900 text-xs font-medium mr-2">詳情</button>
+                                        <button onclick="window.handleDeleteProject('${p.id}', '${p.title}')" class="text-red-600 hover:text-red-900 text-xs font-medium">刪除</button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        };
+
+        const handleNewProject = async (e) => {
+            e.preventDefault();
+            
+            const submitText = document.getElementById('project-submit-text');
+            submitText.textContent = '新增中...';
+            submitText.disabled = true;
+
+            const managerSelect = document.getElementById('project_managers');
+            const selectedManagers = Array.from(managerSelect.selectedOptions).map(option => option.value);
+
+            if (selectedManagers.length === 0) {
+                await showModal('錯誤', '請至少選擇一位專案管理人。');
+                submitText.textContent = '新增計畫';
+                submitText.disabled = false;
+                return;
+            }
+
+            const projectData = {
+                id: document.getElementById('project_id').value.trim(), 
+                title: document.getElementById('project_title').value,
+                host: document.getElementById('project_host').value,
+                managers: selectedManagers,
+                budget_personnel: parseInt(document.getElementById('budget_personnel').value) || 0,
+                budget_operating: parseInt(document.getElementById('budget_operating').value) || 0,
+                budget_equipment: parseInt(document.getElementById('budget_equipment').value) || 0,
+                // NEW: Initialize status and expenses
+                status: 'active', 
+                memo: '',
+                expenses: [], 
+                createdAt: serverTimestamp(),
+            };
+            
+            try {
+                // Use the project ID as the Firestore document ID for easy reference, but check if it already exists
+                const docRef = doc(db, getPrivateCollectionPath('projects'), projectData.id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    await showModal('錯誤', `計畫編號 ${projectData.id} 已存在，請使用不同的編號。`);
+                    return;
+                }
+
+                await setDoc(docRef, projectData);
+                document.getElementById('new-project-form').reset();
+                await showModal('成功', `專案「${projectData.title}」已成功新增！`);
+            } catch (error) {
+                console.error("Error adding project:", error);
+                await showModal('錯誤', '新增專案失敗。請檢查連線或輸入資料。');
+            } finally {
+                submitText.textContent = '新增計畫';
+                submitText.disabled = false;
+            }
+        };
+
+        const handleDeleteProject = async (projectId, projectTitle) => {
+            const confirmed = await showModal('確認刪除', `您確定要刪除專案「${projectTitle}」嗎？此操作不可逆轉。`, true);
+            if (!confirmed) return;
+
+            try {
+                await deleteDoc(doc(db, getPrivateCollectionPath('projects'), projectId));
+                await showModal('成功', `專案「${projectTitle}」已成功刪除。`);
+            } catch (error) {
+                console.error("Error deleting project:", error);
+                await showModal('錯誤', '刪除專案失敗。');
+            }
+        };
+        window.handleDeleteProject = handleDeleteProject; // Expose to global scope for HTML event
+
+        // 3. Project Detail View and Expense Logging
+        const renderProjectDetail = (projectId) => {
+            const project = allProjects.find(p => p.id === projectId);
+            if (!project) {
+                document.getElementById('project-detail-view').innerHTML = '<div class="text-center py-12 text-gray-500">找不到此專案。</div>';
+                return;
+            }
+            
+            // NEW: Calculate spent from expenses array
+            const projectSpent = (project.expenses || []).reduce((acc, exp) => {
+                acc[exp.type] = (acc[exp.type] || 0) + exp.amount;
+                return acc;
+            }, { personnel: 0, operating: 0, equipment: 0 });
+
+            const totalBudget = (project.budget_personnel || 0) + (project.budget_operating || 0) + (project.budget_equipment || 0);
+            const totalSpent = projectSpent.personnel + projectSpent.operating + projectSpent.equipment;
+            const totalBalance = totalBudget - totalSpent;
+            
+            const expenseBlock = (title, key) => {
+                const budget = project[`budget_${key}`] || 0;
+                const spent = projectSpent[key] || 0; // Use calculated spent
+                const balance = budget - spent;
+                const percentage = budget > 0 ? ((spent / budget) * 100).toFixed(1) : 0;
+                const balanceClass = balance >= 0 ? 'text-green-600' : 'text-red-600';
+                
+                return `
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <h5 class="font-semibold text-lg mb-2 text-gray-800">${title}</h5>
+                        <p class="text-sm">預算: <span class="font-medium">${formatCurrency(budget)}</span></p>
+                        <p class="text-sm">已花費: <span class="font-medium text-yellow-600">${formatCurrency(spent)}</span></p>
+                        <p class="text-sm font-bold mt-1 ${balanceClass}">餘額: ${formatCurrency(balance)}</p>
+                        <div class="h-2 bg-gray-300 rounded-full mt-2">
+                            <div class="h-2 bg-indigo-500 rounded-full" style="width: ${Math.min(percentage, 100)}%;"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">進度: ${percentage}%</p>
+                    </div>
+                `;
+            };
+
+            // 顯示多個管理人
+            const managersDisplay = (project.managers && Array.isArray(project.managers)) ? project.managers.join(', ') : (project.manager || 'N/A');
+            
+            const isCompleted = project.status === 'completed';
+            const statusText = isCompleted ? '已結案' : '執行中';
+            const statusClass = isCompleted ? 'status-completed' : 'bg-blue-100 text-blue-800';
+            const toggleButtonText = isCompleted ? '重啟專案' : '結案專案';
+            const toggleButtonClass = isCompleted ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-red-600 hover:bg-red-700';
+
+            const expenseHistory = (project.expenses || []).sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis());
+
+            const html = `
+                <button onclick="window.switchView('projects')" class="mb-4 text-indigo-600 hover:text-indigo-800 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    返回專案列表
+                </button>
+
+                <div class="bg-white p-6 rounded-xl shadow-xl ${isCompleted ? 'border-2 border-green-500' : ''}">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-2xl font-bold text-indigo-600">${project.title} (${project.id})</h2>
+                        <span class="text-lg font-bold px-3 py-1 rounded-full ${statusClass}">${statusText}</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6 pb-4 border-b">
+                        <p><strong>主持人:</strong> ${project.host}</p>
+                        <p><strong>管理人:</strong> ${managersDisplay}</p>
+                        <p><strong>總預算:</strong> <span class="font-bold">${formatCurrency(totalBudget)}</span></p>
+                        <p><strong>總餘額:</strong> <span class="font-bold ${totalBalance >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(totalBalance)}</span></p>
+                    </div>
+
+                    <!-- Expense Overview -->
+                    <h3 class="text-xl font-semibold mb-3">經費細項總覽</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        ${expenseBlock('人事費', 'personnel')}
+                        ${expenseBlock('業務費', 'operating')}
+                        ${expenseBlock('設備費', 'equipment')}
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Expense Logging Form -->
+                        <div class="p-4 border rounded-xl shadow-inner ${isCompleted ? 'opacity-50 pointer-events-none' : ''}">
+                            <h3 class="text-xl font-semibold mb-3 border-b pb-2">填報此次花費 (Expense Logging)</h3>
+                            <form id="expense-log-form" data-project-id="${projectId}" class="space-y-4">
+                                <select id="expense_type" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                                    <option value="" disabled selected>選擇花費類別</option>
+                                    <option value="personnel">人事費</option>
+                                    <option value="operating">業務費</option>
+                                    <option value="equipment">設備費</option>
+                                </select>
+                                <input type="number" id="expense_amount" placeholder="此次花費金額" required min="1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                                <textarea id="expense_memo" rows="2" placeholder="花費細項備註 (例如：購買設備型號)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"></textarea>
+                                <button type="submit" class="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-md">
+                                    <span id="expense-submit-text">確認填報與記錄</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Project Memo & Status Update -->
+                        <div class="p-4 border rounded-xl shadow-inner">
+                            <h3 class="text-xl font-semibold mb-3 border-b pb-2">專案備註與狀態</h3>
+                            <form id="project-memo-form" data-project-id="${projectId}" class="space-y-4">
+                                <label for="project_memo" class="block text-sm font-medium text-gray-700">專案總備註</label>
+                                <textarea id="project_memo" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">${project.memo || ''}</textarea>
+                                <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-md">
+                                    儲存備註
+                                </button>
+                            </form>
+                            
+                            <button onclick="window.handleToggleProjectStatus('${projectId}', '${isCompleted ? 'active' : 'completed'}', '${project.title}')" 
+                                class="w-full mt-4 p-3 rounded-lg font-semibold text-white transition-colors shadow-md ${toggleButtonClass}">
+                                ${toggleButtonText}
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2 text-center">結案後無法再進行花費填報。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Expense History -->
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-semibold mb-3 border-t pt-4">花費細項記錄 (${expenseHistory.length} 筆)</h3>
+                        <div class="overflow-x-auto bg-gray-50 rounded-lg p-2 max-h-96">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-200">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">日期</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">類別</th>
+                                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 uppercase">金額</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">備註/細項</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    ${expenseHistory.length === 0 ? `
+                                        <tr><td colspan="4" class="text-center py-4 text-gray-500">目前沒有花費記錄。</td></tr>
+                                    ` : expenseHistory.map(exp => `
+                                        <tr>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-800">${exp.timestamp?.toDate ? exp.timestamp.toDate().toLocaleString('zh-TW', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A'}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-indigo-600">${exp.type === 'personnel' ? '人事費' : exp.type === 'operating' ? '業務費' : '設備費'}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-right font-semibold">${formatCurrency(exp.amount)}</td>
+                                            <td class="px-4 py-2 text-sm text-gray-600">${exp.memo || '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('project-detail-view').innerHTML = html;
+            document.getElementById('expense-log-form').onsubmit = handleExpenseLog;
+            document.getElementById('project-memo-form').onsubmit = handleUpdateProjectMemo;
+        };
+
+        const handleUpdateProjectMemo = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const projectId = form.getAttribute('data-project-id');
+            const memo = document.getElementById('project_memo').value;
+            
+            try {
+                const docRef = doc(db, getPrivateCollectionPath('projects'), projectId);
+                await updateDoc(docRef, { memo: memo });
+                await showModal('成功', '專案備註已成功儲存。');
+            } catch (error) {
+                console.error("Error updating memo:", error);
+                await showModal('錯誤', '儲存備註失敗。');
+            }
+        };
+        window.handleUpdateProjectMemo = handleUpdateProjectMemo; // Expose globally
+
+        const handleToggleProjectStatus = async (projectId, newStatus, projectTitle) => {
+            const actionText = newStatus === 'completed' ? '結案' : '重啟';
+            const confirmed = await showModal('確認操作', `您確定要${actionText}專案「${projectTitle}」嗎？`, true);
+            if (!confirmed) return;
+            
+            try {
+                const docRef = doc(db, getPrivateCollectionPath('projects'), projectId);
+                await updateDoc(docRef, { status: newStatus });
+                await showModal('成功', `專案「${projectTitle}」已成功${actionText}。`);
+            } catch (error) {
+                console.error(`Error ${actionText} project:`, error);
+                await showModal('錯誤', `${actionText}專案失敗。`);
+            }
+        };
+        window.handleToggleProjectStatus = handleToggleProjectStatus; // Expose globally
+
+
+        const handleExpenseLog = async (e) => {
+            e.preventDefault();
+            
+            const form = e.target;
+            const projectId = form.getAttribute('data-project-id');
+            const expenseType = document.getElementById('expense_type').value;
+            const expenseAmount = parseInt(document.getElementById('expense_amount').value) || 0;
+            const expenseMemo = document.getElementById('expense_memo').value.trim(); // NEW
+            const submitText = document.getElementById('expense-submit-text');
+
+            if (!expenseType || expenseAmount <= 0) {
+                await showModal('錯誤', '請選擇花費類別並輸入有效的金額。');
+                return;
+            }
+
+            submitText.textContent = '填報中...';
+            submitText.disabled = true;
+            
+            const docRef = doc(db, getPrivateCollectionPath('projects'), projectId);
+            const newExpense = {
+                type: expenseType,
+                amount: expenseAmount,
+                memo: expenseMemo,
+                timestamp: serverTimestamp()
+            };
+
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const projectDoc = await transaction.get(docRef);
+                    if (!projectDoc.exists()) {
+                        throw "Project does not exist!";
+                    }
+                    
+                    const currentExpenses = projectDoc.data().expenses || [];
+                    const updatedExpenses = [...currentExpenses, newExpense];
+                    
+                    transaction.update(docRef, { expenses: updatedExpenses });
+                });
+                
+                form.reset();
+                await showModal('成功', `已成功記錄一筆 ${formatCurrency(expenseAmount)} 的花費細項！`);
+            } catch (error) {
+                console.error("Transaction failed:", error);
+                await showModal('錯誤', '填報花費失敗。請檢查連線或資料。');
+            } finally {
+                submitText.textContent = '確認填報與記錄';
+                submitText.disabled = false;
+            }
+        };
+
+
+        // 4. Calendar View
+        const renderCalendar = () => {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            // This is a simple client-side calendar representation
+            const renderMonth = (year, month) => {
+                const firstDay = new Date(year, month, 1).getDay(); // 0 (Sun) to 6 (Sat)
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const monthName = new Date(year, month).toLocaleString('zh-TW', { month: 'long' });
+                
+                let calendarCells = '';
+                
+                // Add blank days for padding
+                for (let i = 0; i < firstDay; i++) {
+                    calendarCells += '<div class="h-24 p-2 border"></div>';
+                }
+
+                // Add days
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const events = allProjects.flatMap(p => 
+                        (p.calendar_events || []).filter(e => e.date === fullDate).map(e => ({...e, projectTitle: p.title}))
+                    );
+
+                    calendarCells += `
+                        <div class="h-24 p-2 border relative overflow-y-auto hover:bg-indigo-50 transition-colors cursor-pointer" 
+                            onclick="window.showCalendarModal('${fullDate}')" 
+                            title="點擊新增事項">
+                            <p class="text-sm font-semibold">${day}</p>
+                            <div class="space-y-0.5 mt-1">
+                                ${events.map(e => `
+                                    <div class="text-xs truncate bg-indigo-100 text-indigo-800 px-1 rounded" title="${e.projectTitle}: ${e.task} (${e.manager})">
+                                        ${e.task}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <h3 class="text-2xl font-bold mb-4 text-center text-gray-800">${year} 年 ${monthName}</h3>
+                    <div class="grid grid-cols-7 text-center font-medium text-sm mb-2 text-gray-600">
+                        <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+                    </div>
+                    <div class="grid grid-cols-7 border-t border-l">
+                        ${calendarCells}
+                    </div>
+                `;
+            };
+
+            const html = `
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg">
+                        ${renderMonth(year, month)}
+                    </div>
+                    
+                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold mb-4 border-b pb-2 text-indigo-600">新增排程事項</h3>
+                        <form id="calendar-event-form" class="space-y-4">
+                            <select id="event_project_id" required class="w-full p-2 border border-gray-300 rounded-lg">
+                                <option value="" disabled selected>指派給專案...</option>
+                                ${allProjects.map(p => `<option value="${p.id}">${p.title} (${(p.managers || []).join(', ')})</option>`).join('')} 
+                            </select>
+                            <input type="date" id="event_date" required class="w-full p-2 border border-gray-300 rounded-lg">
+                            <input type="text" id="event_task" placeholder="事項描述或計畫名稱" required class="w-full p-2 border border-gray-300 rounded-lg">
+                            <!-- NEW: Dropdown for assigning the specific task manager -->
+                            <select id="event_manager" class="w-full p-2 border border-gray-300 rounded-lg">
+                                <option value="" selected>指派給管理人 (選填)</option>
+                                ${availableManagers.map(m => `<option value="${m.name}">${m.name}</option>`).join('')}
+                            </select>
+                            <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                                新增事項
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('calendar-view').innerHTML = html;
+            document.getElementById('calendar-event-form').onsubmit = handleCalendarEvent;
+        };
+
+        const showCalendarModal = (date) => {
+            const dateInput = document.getElementById('event_date');
+            if (dateInput) dateInput.value = date;
+            
+            // Switch to the form view (simple approach) or just show a message
+            showModal('新增排程', `請在右側表單填寫 ${date} 的事項。`);
+        }
+        window.showCalendarModal = showCalendarModal;
+
+        const handleCalendarEvent = async (e) => {
+            e.preventDefault();
+            const projectId = document.getElementById('event_project_id').value;
+            const date = document.getElementById('event_date').value;
+            const task = document.getElementById('event_task').value;
+            // UPDATED: Get manager from new dropdown
+            const manager = document.getElementById('event_manager').value || '未指定'; 
+            
+            if (!projectId || !date || !task) {
+                await showModal('錯誤', '請填寫所有必填欄位。');
+                return;
+            }
+
+            const docRef = doc(db, getPrivateCollectionPath('projects'), projectId);
+            const newEvent = { date, task, manager, eventId: Date.now() };
+
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const projectDoc = await transaction.get(docRef);
+                    if (!projectDoc.exists()) throw "Project does not exist!";
+                    
+                    const currentEvents = projectDoc.data().calendar_events || [];
+                    const updatedEvents = [...currentEvents, newEvent];
+                    
+                    transaction.update(docRef, { calendar_events: updatedEvents });
+                });
+                
+                document.getElementById('calendar-event-form').reset();
+                await showModal('成功', `排程事項「${task}」已成功新增到 ${date}。`);
+            } catch (error) {
+                console.error("Error adding calendar event:", error);
+                await showModal('錯誤', '新增排程事項失敗。');
+            }
+        };
+
+        // 5. New View: Manager Management (managers-view)
+        const renderManagersView = () => {
+            const html = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Add Manager Form -->
+                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg h-fit">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2 text-indigo-600">新增專案管理人</h2>
+                        <form id="add-manager-form" class="space-y-4">
+                            <input type="text" id="new_manager_name" placeholder="輸入管理人姓名" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <button type="submit" class="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-md">
+                                新增管理人
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Manager List -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2 text-gray-800">現有專案管理人 (${availableManagers.length} 位)</h2>
+                        <ul class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                            ${availableManagers.length === 0 ? '<li class="text-gray-500 py-4 text-center">目前沒有管理人</li>' :
+                                availableManagers.map(m => `
+                                    <li class="flex justify-between items-center p-3 border rounded-lg bg-gray-50">
+                                        <span class="font-medium text-gray-800">${m.name}</span>
+                                        <button onclick="window.handleDeleteManager('${m.id}', '${m.name}')" class="text-red-600 hover:text-red-800 text-sm font-medium p-1 rounded-md transition-colors hover:bg-red-100">
+                                            刪除
+                                        </button>
+                                    </li>
+                                `).join('')
+                            }
+                        </ul>
+                    </div>
+                </div>
+            `;
+            document.getElementById('managers-view').innerHTML = html;
+            document.getElementById('add-manager-form').onsubmit = handleAddManager;
+        };
+
+        const handleAddManager = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('new_manager_name').value.trim();
+            if (!name) return;
+
+            if (availableManagers.some(m => m.name === name)) {
+                await showModal('錯誤', `管理人 ${name} 已存在。`);
+                return;
+            }
+
+            const managerCollectionRef = collection(db, getPrivateCollectionPath('managers'));
+            try {
+                // Use name as doc ID for simplicity in management view
+                await setDoc(doc(managerCollectionRef, name), { name: name, createdAt: serverTimestamp() });
+                document.getElementById('add-manager-form').reset();
+                await showModal('成功', `管理人 ${name} 已成功新增！`);
+            } catch (error) {
+                console.error("Error adding manager:", error);
+                await showModal('錯誤', '新增管理人失敗。');
+            }
+        };
+
+        const handleDeleteManager = async (managerId, managerName) => {
+            const confirmed = await showModal('確認刪除', `您確定要刪除管理人「${managerName}」嗎？建議檢查所有專案並重新指派相關專案管理人。`, true);
+            if (!confirmed) return;
+
+            try {
+                await deleteDoc(doc(db, getPrivateCollectionPath('managers'), managerId));
+                await showModal('成功', `管理人「${managerName}」已成功刪除。`);
+            } catch (error) {
+                console.error("Error deleting manager:", error);
+                await showModal('錯誤', '刪除管理人失敗。');
+            }
+        };
+        window.handleDeleteManager = handleDeleteManager; // Expose to global scope for HTML event
+
+        // 6. AI Analysis View (Mock Implementation)
+        const renderAIAnalysis = () => {
+            const html = `
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 border-b pb-2 text-indigo-600">AI 專案活動分析報告</h2>
+                    <p class="text-gray-600 mb-4">此功能將使用 AI 根據您的專案數據與活動 (例如行事曆事件、費用填報) 生成一份每週/每月分析報告或計畫建議。計畫執行時間為：<span class="font-bold text-red-500">114/09/01 - 115/12/31</span>。</p>
+                    
+                    <div class="flex space-x-4 mb-4">
+                        <select id="report_period" class="p-2 border rounded-lg">
+                            <option value="weekly">每週報告</option>
+                            <option value="monthly">每月報告</option>
+                        </select>
+                        <button id="generate-ai-report" class="bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-md">
+                            生成報告
+                        </button>
+                    </div>
+
+                    
+                    <div id="ai-report-output" class="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50 min-h-[200px]">
+                        <p class="text-gray-500">點擊上方按鈕開始生成報告...</p>
+                    </div>
+                    
+                    <div id="ai-loading-indicator" class="mt-4 hidden flex items-center text-indigo-600">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        報告生成中，請稍候...
+                    </div>
+                </div>
+            `;
+            document.getElementById('ai-analysis-view').innerHTML = html;
+            document.getElementById('generate-ai-report').onclick = generateAIReport;
+        };
+
+        const generateAIReport = async () => {
+            const outputDiv = document.getElementById('ai-report-output');
+            const loadingIndicator = document.getElementById('ai-loading-indicator');
+            const generateButton = document.getElementById('generate-ai-report');
+            const period = document.getElementById('report_period').value === 'weekly' ? '每週' : '每月';
+
+            outputDiv.innerHTML = '';
+            loadingIndicator.classList.remove('hidden');
+            generateButton.disabled = true;
+
+            // Construct a comprehensive prompt based on current data
+            const projectSummaries = allProjects.map(p => {
+                const totalBudget = (p.budget_personnel || 0) + (p.budget_operating || 0) + (p.budget_equipment || 0);
+                const totalSpent = (p.expenses || []).reduce((sum, exp) => sum + exp.amount, 0); // NEW: Use detailed expense sum
+                const events = (p.calendar_events || []).map(e => `[${e.date}] ${e.task} (${e.manager})`).join('; ');
+                
+                const managers = (p.managers && Array.isArray(p.managers)) ? p.managers.join(', ') : (p.manager || '無');
+                const status = p.status === 'completed' ? '已結案' : '執行中';
+                const expenseCount = (p.expenses || []).length;
+
+                return `
+                    - 計畫題目: ${p.title}
+                    - 狀態: ${status}
+                    - 管理人: ${managers}
+                    - 總預算: ${totalBudget}
+                    - 已花費: ${totalSpent} (餘額: ${totalBudget - totalSpent})
+                    - 費用筆數: ${expenseCount}
+                    - ${period}主要活動/排程: ${events || '無'}
+                `;
+            }).join('\n');
+            
+            const systemPrompt = `你是一位專業的專案經理助理 AI。請根據提供的專案數據，生成一份詳盡的「${period}專案活動分析與建議報告」。報告應包含：
+                1. 業務進度分析：根據專案狀態和活動，判斷整體執行進度。
+                2. 費用花費分析：總結所有專案的財務狀況，指出預算使用率高低或超支專案。
+                3. 建議與提醒：根據計畫的時間範圍 (114/09/01 - 115/12/31) 和當前執行狀況，提供專業的費用控制、進度推進建議。
+                請以 AI 助理的角度，使用親切且專業的語氣，使用繁體中文，報告格式請使用 Markdown。`;
+            
+            const userQuery = `請分析以下專案數據並生成報告:\n\n總專案數: ${totalMetrics.totalProjects}\n總預算: ${totalMetrics.totalBudget}\n\n詳細專案數據:\n${projectSummaries}`;
+            
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+            
+            try {
+                // Exponential Backoff implementation (omitted for brevity, but required in production)
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "AI 報告生成失敗。";
+                
+                outputDiv.innerHTML = `<div class="prose max-w-none">${text.replace(/\n/g, '<br>')}</div>`;
+                
+            } catch (error) {
+                console.error("AI API call failed:", error);
+                outputDiv.innerHTML = '<p class="text-red-600">連線錯誤或 API 呼叫失敗，請稍後再試。</p>';
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                generateButton.disabled = false;
+            }
+        };
+
+
+        // 7. Information Exchange View (Public Messaging/Blog)
+        const renderExchange = () => {
+            const html = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Message Feed -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2 text-gray-800">資訊交流留言區</h2>
+                        <div id="message-feed" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                            ${exchangeMessages.length === 0 ? '<p class="text-gray-500 text-center py-12">目前沒有留言。</p>' : 
+                                exchangeMessages.map(m => {
+                                    const isCurrentUser = m.userId === userId;
+                                    const timestamp = m.timestamp?.toDate ? m.timestamp.toDate().toLocaleString('zh-TW') : '剛剛';
+                                    const bgColor = isCurrentUser ? 'bg-indigo-50' : 'bg-gray-50';
+                                    const borderColor = isCurrentUser ? 'border-indigo-400' : 'border-gray-300';
+                                    
+                                    return `
+                                        <div class="p-3 rounded-lg border-l-4 ${bgColor} ${borderColor} shadow-sm">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <p class="text-xs font-semibold text-gray-700">用戶ID: ${m.userId} ${isCurrentUser ? '(您)' : ''}</p>
+                                                <p class="text-xs text-gray-500">${timestamp}</p>
+                                            </div>
+                                            <p class="text-gray-800">${m.content}</p>
+                                        </div>
+                                    `;
+                                }).join('')
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Post Form -->
+                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg h-fit">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2 text-indigo-600">發表留言</h2>
+                        <form id="exchange-post-form" class="space-y-4">
+                            <textarea id="post_content" rows="4" placeholder="輸入您的文字/留言..." required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                            <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-md">
+                                發表
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('exchange-view').innerHTML = html;
+            document.getElementById('exchange-post-form').onsubmit = handleNewMessage;
+            
+            // Scroll to the top of the message feed after rendering
+            const messageFeed = document.getElementById('message-feed');
+            if (messageFeed) messageFeed.scrollTop = 0;
+        };
+        
+        const handleNewMessage = async (e) => {
+            e.preventDefault();
+            const content = document.getElementById('post_content').value.trim();
+            if (!content) return;
+
+            const postData = {
+                userId: userId,
+                content: content,
+                timestamp: serverTimestamp(),
+            };
+            
+            try {
+                await addDoc(collection(db, getPublicCollectionPath('messages')), postData);
+                document.getElementById('post_content').value = ''; // Clear textarea
+                // Message feed will update automatically via onSnapshot
+            } catch (error) {
+                console.error("Error posting message:", error);
+                await showModal('錯誤', '發表留言失敗。');
+            }
+        };
+
+        // --- Event Listeners for Navigation ---
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const view = e.currentTarget.getAttribute('data-view');
+                switchView(view);
+            });
+        });
+
+        // Expose switchView globally for use in dynamic HTML content (e.g., project list clicks)
+        window.switchView = switchView; 
+        
+    </script>
+
+</body>
+</html>
